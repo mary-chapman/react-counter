@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://www.gstatic.com/firebasejs/3.6.8/firebase.js"></script>
+    <script src="https://unpkg.com/react@15/dist/react.min.js"></script>
+    <script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+
+  </head>
+
+  <body>
+
+    <div id="container">
+      <div id="app"></div>
+    </div>
+
+    <script type="text/babel">
+        // Initialize Firebase
+        var config = {
+        apiKey: "AIzaSyC7CDNtyATCMFeOyk3gwI6EKzysvknVS2A",
+        authDomain: "counter-72835.firebaseapp.com",
+        databaseURL: "https://counter-72835.firebaseio.com",
+        storageBucket: "counter-72835.appspot.com",
+        messagingSenderId: "293411846542"
+        };
+        firebase.initializeApp(config);
+
+      //to connect to the database
+      var database = firebase.database();
+      //creates a reference to the scores node
+      var ref = database.ref('scores');
+
+
+      var App = React.createClass({
+        getInitialState: function() {
+          return {
+            nameHistory: [],
+            countHistory: [],
+            name: '',
+            count: 0
+          }
+        },
+        //when the user clicks, adds increases the count by 1
+        handleClick: function() {
+          this.setState({ count: this.state.count + 1 })
+        },
+        //pushes the state to the database
+        submitData: function() {
+          ref.push(this.state.count);
+        },
+        //changes the state when the user inputs their name
+        handleChange: function(event) {
+          this.setState({ name: event.target.value })
+        },
+        handleSubmit: function() {
+          //pushes the name/score data to the database
+          ref.push({name: this.state.name, score: this.state.count});
+          this.setState({name: '', count: 0});
+        },
+        renderHighScores: function(item) {
+          console.log(item);
+        },
+        render() {
+          return (
+            <div>
+              <h1>{this.state.count}</h1>
+              <button onClick={this.handleClick}>CLICK</button>
+              <input
+                //when the user types omtp the input - triggers the hanndleChange event
+                onChange={this.handleChange}
+                //creates a controlled component since the value is controlled by react and not the other way around
+                value={this.state.name} />
+              <button onClick={this.handleSubmit}>SUBMIT</button>
+
+            </div>
+          )
+        }
+
+    });
+
+
+        ReactDOM.render(
+          <div>
+            <App />
+          </div>,
+          document.getElementById('app')
+        )
+
+      </script>
+
+    </body>
+  </html>
